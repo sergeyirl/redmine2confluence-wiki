@@ -53,7 +53,7 @@ def wiki_reference_to_confluence(reference):
         reference = space + ':' + reference
     if anchor:
         reference = reference + '#' + anchor
-    if text:
+    if text and text != article:
         reference = text + '|' + reference
     # debug printout
     # print 'space: \'{0}\', article: \'{1}\', anchor: \'{2}\', text: \'{3}\'\nOutput: [{4}]'.format(space, article, anchor, text, reference)
@@ -90,9 +90,11 @@ def urls_to_confluence(content):
 def include_macro(macro):
     """Helper function to convert {include} macro. Returns string"""
     if isinstance(macro, MatchObject):
-        macro = reference.group(0)
+        reference = macro.group(0)
+    print reference
     # {{include(reference)}} => {include:reference}
-    reference = re.search('\(.*\)', macro ).group(0)
+    reference = re.search('\((.*)\)', reference ).group(1)
+    print reference
     # convert reference to the proper format and cut extra [] returned by the conversion function
     reference = wiki_reference_to_confluence(reference).strip('[]')
     return "{include:" + reference + "}"
