@@ -8,7 +8,7 @@ def self.export_attach(dir, wikipage)
 	unless wikipage.attachments.empty? 
 		dir = dir + "/" +  wikipage.title
 		Dir.mkdir(dir)
-		wikipage.attachments.each { |a|FileUtils.cp( "/home/redmine/redmine-2.4.4/files/" + a.disk_filename,  dir + "/" + a.filename ) }
+		wikipage.attachments.each { |a|FileUtils.cp(a.diskfile,  dir + "/" + a.filename ) }
 	end
 	true
 end
