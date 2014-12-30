@@ -7,7 +7,7 @@ from xmlrpclib import ServerProxy, Fault
 # redmine data processing functions
 import redmine
 # we need a list of redmine spaces for reference
-from redmine_spaces import spaces
+from redmine_spaces import spaces, parent_pages
 
 # Connects to confluence server with username and password
 site_URL = "https://your.confluence.site/"
@@ -41,12 +41,14 @@ def save_attachments(space, filename, curpage):
 
 
 
-def save(space, filename, pagename):
+def save(space, filename, pagename, project_name):
     # Retrives text from a file and converts it
     content = redmine.wiki_to_confluence(filename)
     # Create empty page with content
     content = server.confluence2.convertWikiToStorageFormat(token, content)
     newpage = {"title":pagename, "space":space, "content":content}
+    if parent_pages.has_key(project_name):
+        newpage["parentId"] = parent_pages[project_name]
     server.confluence2.storePage(token, newpage)
     # Push attachments to the page
     curpage = server.confluence2.getPage(token,space,pagename)
@@ -62,7 +64,7 @@ for project_dir, subdirs, files in os.walk('.'):
     for filename in files:
         if filename[-8:] == '.textile':
             pagename = filename[:-8].replace('_',' ').strip()
-            # If page name is 'Wiki' it needs to be changed in order to avoid conflicts 
+            # If page name is 'Wiki' it needs to be changed in order to avoid conflicts
             if pagename == 'Wiki':
                 pagename = project_name + ' Wiki'
         else:
@@ -78,6 +80,6 @@ for project_dir, subdirs, files in os.walk('.'):
             print "Page %s exists" % pagename
             continue
         print "Saving page %s"% pagename
-        save(spaces[project_name], os.path.join(project_dir,filename),pagename)
+        save(spaces[project_name], os.path.join(project_dir,filename),pagename, project_name)
 
 server.confluence2.logout(token)
