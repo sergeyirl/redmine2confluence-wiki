@@ -19,3 +19,12 @@ To use this conversion:
 	* confluence URL
 - Run the python script 'import_confluence.py' in the exported data folder (root level)
 
+Examples:
+---------
+
+Exporting a single project by name from Redmine 2 / Rails 3:
+
+    $ cd /PATH/TO/redmine
+    $ script/rails console production
+    > require("/PATH/TO/redmine2confluence-wiki/export_wiki.rb")
+    > ExportWiki.export_wiki("/tmp", Project.find_by_name("PROJECT NAME").wiki)
