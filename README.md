@@ -19,7 +19,7 @@ To use this conversion:
 	* confluence URL
 - Run the python script 'import_confluence.py' in the exported data folder (root level)
 
-Examples:
+Examples 1:
 ---------
 
 Exporting a single project by name from Redmine 2 / Rails 3:
@@ -28,3 +28,35 @@ Exporting a single project by name from Redmine 2 / Rails 3:
     $ script/rails console production
     > require("/PATH/TO/redmine2confluence-wiki/export_wiki.rb")
     > ExportWiki.export_wiki("/tmp", Project.find_by_name("PROJECT NAME").wiki)
+
+Example 2:
+---------
+
+This is how we used it with Redmine 2.2.0, Ruby 1.8.7 and Rails 3.2.9.
+
+First I had to find the rails command:
+
+    # find / -name rails
+
+Next execute the script:
+
+    # cd /PATH/TO/redmine
+    # RAILS_ENV=production /var/lib/gems/1.8/bin/rails console
+    > load "exportwiki.rb"
+    > ExportWiki.export_all()
+
+All the pages will be saved under /tmp/redmine.
+
+Move the page to the location of the script.
+
+    # mv /tmp/* .
+
+Next I tried with a test Confluence server. Some pages might be refused by Confluence. I split the file in two till I find the line that causes the problem. Put the line in redmine_space.py.
+
+I also created a script that generates a SQL script to be run by Postgresql to fix page authors. The process is described here:
+
+https://confluence.atlassian.com/display/CONFKB/How+to+change+the+creator+of+a+page
+
+    # ./create_sql_script.py
+
+This will result in a script called 'fix-author.sql' to be run on the Confluence server.
